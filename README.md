@@ -1,5 +1,5 @@
 # MemoryAndMeaningLab
-Comprising of the Bellana Memory and Meaning Lab repositories. 
+Comprising of the Bellana Memory and Meaning Lab code. 
 
 # Resources (Open-Source Packages)
 The following are open-source programming tools developed by the Bellana Lab to demonstrate free association measures used in published works for everyone to use.
