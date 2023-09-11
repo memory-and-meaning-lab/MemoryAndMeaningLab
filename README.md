@@ -12,8 +12,8 @@ The following are open-source programming tools developed by the Bellana Lab to 
 [Fiddle MetaData](https://jsfiddle.net/MemoryandMeaningLab/1yd04ah3/9/)
 
 # Tutorial Repository
-Our lab members develop open-access tutorials using R Programming and Python to showcase the utility of natural language processing in real-time. 
+Our lab members develop open-access tutorials using R Programming and Python to showcase the utility of natural language processing in real time. 
 
 ### word-embeddings in R
-[GitHub](https://osf.io/dmez7/) 
+[Open Science Framework](https://osf.io/dmez7/) 
 =======
