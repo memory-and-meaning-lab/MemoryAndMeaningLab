@@ -14,10 +14,20 @@ The following are open-source programming tools developed by the Bellana Lab to 
 # Tutorial Repository
 Our lab members develop open-access tutorials using R Programming and Python to showcase the utility of natural language processing in real time. 
 
-### GLoVE word embeddings in R
+## Natural Language Processing
+
+### GLoVe word embeddings in R
 
 An R Programming tutorial on how to load and process GLoVe embeddings and use cosine similarity to assess the semantic similarity of words
 
 [Open Science Framework](https://osf.io/dmez7/) - [GitHub](https://osf.io/dmez7/)
+
+## Statistics 
+
+### Permutation Testing and Inter-Rater Reliability
+
+An R Programming tutorial on how to conduct permutation tests and compute inter-rater reliability for statistical internal validity.
+
+[Open Science Framework](https://osf.io/x57kr/) - [GitHub](https://osf.io/x57kr/)
 
 =======
