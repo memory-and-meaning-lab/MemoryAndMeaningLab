@@ -28,6 +28,6 @@ An R Programming tutorial on how to load and process GLoVe embeddings and use co
 
 An R Programming tutorial on how to conduct permutation tests and compute inter-rater reliability for statistical internal validity.
 
-[Open Science Framework](https://osf.io/x57kr/) - [GitHub](https://osf.io/x57kr/)
+[Open Science Framework](https://osf.io/x57kr/) - [GitHub](PermutationTesting_and_InterRaterReliability_tutorial_v3.Rmd)
 
 =======
