@@ -1,0 +1,232 @@
+---
+title: "101: Permutation Testing and Inter-Rater Reliability"
+author: "Christiane Marie Canillo & Buddhika Bellana - Glendon College, York University"
+date: "July 18, 2022"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 4 #upto four depths of headings (specified by #, ## and ###)
+    number_sections: false  #specified numbered sections
+    theme: paper #specified the theme
+    highlight: tango  #specifies the syntax highlighting style
+editor_options:
+  chunk_output_type: console #ensures your plots are displayed in your Plots pane (not just inline on Source pane) on R Studio
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Background
+
+In this tutorial, we will cover how to compute a permutation test and incorporate a way to assess inter-rater reliability with a dataset provided in an effort to draw conclusions about the main experiment.
+
+What is a permutation test?
+A permutation means “any of the different ways in which a set things can be ordered” ([Oxford Languages](https://www.oxfordlearnersdictionaries.com/definition/english/permutation), n.d.). A permutation test is a non-parametric statistical test that allows users to create an estimated population distribution from observations or frequencies derived from a data set to indicate whether there was an observed difference between two groups. 
+
+For context, the following experimental protocol involves online participants responding to three different text prompts following a free association task experiment after reading a story. Two independent raters code the response entries using nominal data-type classification (i.e., three ratings). The main task is to assess whether our independent raters rated participant entries the same to get a glimpse of participants’ performance on text lingering propensity from reading the story. **What is the correspondence of achieving the data by chance?**
+
+In this case, each rating task will serve as a separate permutation test among our independent raters. One rater’s (R1) ratings are one treatment group, and the second rater’s (R2) ratings are the control group. R1’s ratings are permuted (reshuffled) to manipulate the scores observed to see whether there would be any change in the test statistic.
+  
+What is inter-rater reliability?
+First, reliability concerns whether a test, intervention, or measure, for example, is doing what it is supposed to do compared to another. For an intervention to be high in reliability, another measurement of the same concept should align well with it, often verified numerically. Conversely, a measure will be low in reliability if the two interventions drastically differ in values, indicating an inconsistency.
+
+In this case, inter-rater reliability concerns the raters’ ratings of participant free-text entries on the three different ratings. The expectation is that our independent raters would endorse high inter-rater reliability scores, meaning that the free-text responses from participants were explicit in understanding what was prompted from the reading, free from ambiguity to both raters.
+
+We opt to manipulate the scores from one rater rather than another form of permuting the scores due to the plausibility of another independent rater making the same ratings. We argue that this is the closest way of mimicking other independent raters’ ratings with the data available with human subjects. By doing so, we can see whether the test statistic is more or less the same as the original value, confirming that there is no likely difference obtained from this new sampled score.
+
+How is a permutation test created? 
+To compute a permutation test, we can use R Studio and input lines of code to declare our permutation value and initial test statistic.
+
+How is inter-rater reliability assessed?
+We can assess inter-rater reliability by scanning the ratings per rater and seeing if there is a match. We can store the proportion of ratings matched to see, out of all the participants, how many times our raters matched 100% of the time (complete match) and how many times our raters matched 50% of the time (one rater matched).
+
+Why is a permutation test useful?
+A permutation test is useful for systematically quantifying with a large number of trials whether there was an observed difference between two groups and whether the difference was statistically significant or not. This information will allow us to make conclusions about the population distribution, i.e., if the intervention was an effective measure to use and whether there is a likelihood of obtaining the values again due to chance.
+
+Why is inter-rater reliability useful?
+Inter-rater reliability is helpful to gauge confidence in the measure evaluated, seeing if it measures or captures what it needs to. When there is high inter-rater reliability, we can be confident that the participants’ entries are exactly or relatively close to assessing the construct of interest: the propensity of the text read lingering in mind.
+
+In this tutorial, you will see how to assess inter-rater reliability, generate a permutation test on R Studio, and calculate the expected probability value using the permutation test through one categorical rating task (rating task 1) and one categorial rating task with missing values (rating task 2).
+
+For simplicity, rating task 3 has been omitted as it closely resembles the procedures found in rating task 2. For more information on permutation tests, check out this [link](https://www.jwilber.me/permutationtest/) for a cool visualization.
+
+**Try it out for yourself!** Check out a self-paced reading demonstration of the free association task on our [lab page](https://buddhikabellana.wixsite.com/website/demo-free-association-task). Source code can be found [here](https://osf.io/dmbx4/files/) under materials > task demos > free_association_demo.html
+
+## Load all relevant files
+TIP: *The head() function allows you to view the first 6 rows of the .csv file you import. The tail() function allows you to view the last 6 rows.*
+
+Rating task 1 has rating scores of 0s, 1s, or 2s.
+
+```{r Task 1: load data }
+#Rating task 1
+df1 <- read.csv("//Users/xtianemarie/Downloads/Your_education/York_University/YorkU_LABS/BellanaLab/3_Lingering/Odd_Jobs/PermutationsTest/UpdatedPermutationsTest/Merged_RAs_Carver_Original_DIFF.csv")
+head(df1)
+tail(df1)
+```
+
+Rating task 2 has rating scores of 0s, 1s, 2s, or NAs.
+
+```{r Task 2: load data}
+#Rating task 2
+df2 <- read.csv("//Users/xtianemarie/Downloads/Your_education/York_University/YorkU_LABS/BellanaLab/3_Lingering/Odd_Jobs/PermutationsTest/UpdatedPermutationsTest/Merged_RAs_Carver_Original_LING.csv")
+head(df2)
+tail(df2)
+```
+
+## Rating Task 1: Categorical variables 
+### Define permutation test parameters
+This function defines the ratings made by our two independent raters for the first rating task. The following function sets the number of permutations executed (i.e., the number of times to reshuffle data points).
+
+```{r Task 1: set parameters}
+#Rating task 1
+#define rating variables
+x <- df1$Rating_Difference_Rater_1 #R1
+y <- df1$Rating_Difference_Rater_2 #R2
+
+#set number of permutations for permutation test
+n_perm <- 1000
+
+#lowest estimable p-value, given n_perm
+lowest_p <- 1/n_perm
+print(lowest_p)
+```
+
+### Calculate inter-rater reliability
+
+This function calculates the observed match rate between our independent raters. Line 102 of code reads: the numerator takes the sum of R1's ratings equaling exactly to R2's ratings divided by the denominator, how many items there are in R2 (length of R2's ratings). 
+
+```{r Task 1: calculate observed match rate}
+#Rating task 1
+#calculate the proportion of matches between x and y
+observed_match <- sum(x == y)/length(y) 
+print(paste0("True degree of consistency across raters (max=1): ",round(observed_match,3)))
+```
+
+### Prepare and run permutation test
+
+```{r Task 1: Prepare and run permutation test}
+#Rating task 1
+#define empty variable to hold results of permutation test
+perm_matches <- c()
+
+#run permutation test
+for (i in 1:n_perm){ 
+  rand_x <- sample(x) #randomly shuffle order of x ratings
+  perm <- sum(rand_x == y)/length(y) #calculate the proportion of matches between rand_x and y
+  perm_matches <- c(perm_matches,perm) #append to full list
+}
+```
+
+### Plot for visualization
+
+```{r Task 1: Plot for visualization}
+#plot histogram
+hist(perm_matches,
+     ylab="Frequency", xlab="p(Match)", main="", 
+     xlim=c(.2,1),
+     breaks=seq(.2,1,.025), 
+     col="grey", border=F)
+abline(v = observed_match, col = "red", lty = "dashed", lwd = 3) #indicates inter-rater reliability
+```
+
+### Print final permutation test results
+
+```{r Task 1: Print permutation test results}
+#print results of permutation test
+if((sum(observed_match<=perm_matches)/n_perm)==0){
+  print(paste0("Probability of obtaining the observed data (",round(observed_match,3),") by chance is p < ",lowest_p))
+}else{
+  print(paste0("Probability of obtaining the observed data (",round(observed_match,3),") by chance is p = ",round(sum(observed_match<=perm_matches)/n_perm,3)))
+}
+```
+
+The results from our inter-rater reliability measure indicate that R1 and R2 had a match of 90%. The results from our permutation test indicate that the likelihood of achieving 90% by chance is less than 0.001. It would be unlikely to match 90% of the time again. 
+
+## Rating Task 2: Categorical variables with missing values
+
+**For permutation and inter-rater reliability task 2,** we will convert the NA ratings to 99s and manipulate how they will be understood through R Studio.
+
+NAs refer to data not to be included in the analysis as they do not satisfy the criteria for the rating task, as indicated by _both_ R1 and R2. If one NA exists in the pair, it is accounted for as one rater deemed it as satisfying the criteria.  
+
+### Define permutation test parameters
+
+```{r Task 2: convert NAs to 99s}
+#Rating task 2
+df2[is.na(df2)] <- 99 # highlighting all of the 99s in df
+
+numeric_test <- function(b){ # numeric test holding R1's ratings constant
+  output <- sum(b) # produce the output from the sum of R1's ratings
+  if (output == 198){ # if the output [sum of R1's rating] equals to 198 (99+99, i.e., 2 NAs)
+    return(FALSE) # return FALSE --> meaning, you do not want to have 2 NAs contribute to accuracy
+  } else { # otherwise --> any other variation, i.e., < 198
+    return (TRUE) # return TRUE --> meaning, you will keep any entries that have at least 1 NA (99) identified 
+  }
+}
+
+df2$Keep <- apply(df2,1,numeric_test) # in a separate column named <keep>, apply the following: 
+df2.Keep <- subset(df2, Keep==TRUE, select= c(Rating_Linger_Rater_1, Rating_Linger_Rater_2)) 
+head(df2)
+```
+
+```{r Task 2: set parameters}
+#Rating task 2
+#define rating variables
+c <- df2$Rating_Linger_Rater_1 #R1
+d <- df2$Rating_Linger_Rater_2 #R2
+
+#set number of permutations for permutation test 
+n_perm <- 1000
+
+#lowest estimable p-value, given n_perm
+lowest_p <- 1/n_perm
+print(lowest_p)
+```
+
+### Calculate inter-rater reliability 
+
+```{r Task 2: calculate observed match rate}
+#Rating task 2
+#calculate the proportion of matches between b and c 
+observed_match <- sum(c == d)/length(d)
+print(paste0("True degree of consistency across raters (max=1): ",round(observed_match,3)))
+```
+
+### Prepare and run permutation test
+
+```{r Task 2: proportion match}
+#Rating task 2
+#define empty variable to hold results of permutation test 
+perm_matches <- c()
+
+#run permutation test
+for (i in 1:n_perm){
+rand_c <- sample(c) #randomly shuffle order of c ratings
+perm <- sum(rand_c == d)/length(d) #calculate the proportion of matches between rand_c and d
+perm_matches <- c(perm_matches,perm) #append to full list
+}
+```
+
+### Plot for visualization
+
+```{r Task 2: Plot for visualization}
+#plot histogram
+hist(perm_matches,
+     ylab="Frequency", xlab="p(Match)", main="",
+     xlim=c(.2,1),
+     breaks=seq(0,1,.025),
+     col="grey", border=F)
+abline(v = observed_match, col = "red", lty = "dashed", lwd = 3) 
+```
+
+### Print final permutation test results
+
+```{r Task 2: print results}
+
+#print results of permutation test
+if((sum(observed_match<=perm_matches)/n_perm)==0){
+print(paste0("Probability of obtaining the observed data (",round(observed_match,3),") by chance is p < ",lowest_p))
+} else{
+  print(paste0("Probability of obtaining the observed data (",round(observed_match,3),") by chance is p = ",round(sum(observed_match<=perm_matches)/n_perm,3)))
+}
+```
