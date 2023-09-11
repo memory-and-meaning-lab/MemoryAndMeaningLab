@@ -1,6 +1,7 @@
 # MemoryAndMeaningLab
 Comprising of the Bellana Memory and Meaning Lab code. 
 
+
 # Resources (Open-Source Packages)
 The following are open-source programming tools developed by the Bellana Lab to demonstrate free association measures used in published works for everyone to use.
 
@@ -15,3 +16,4 @@ Our lab members develop open-access tutorials using R Programming and Python to 
 
 ### word-embeddings in R
 [GitHub](https://osf.io/dmez7/) 
+=======
